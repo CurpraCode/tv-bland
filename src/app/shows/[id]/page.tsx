@@ -1,6 +1,7 @@
 import React from 'react';
-// import Link from 'next/link';
+import { z } from 'zod'; 
 import Image from 'next/image';
+
 
 // Define types for your data
 type Params = {
@@ -9,15 +10,39 @@ type Params = {
   };
 }
 
+const ShowEpisodeSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  status: z.string(),
+  summary: z.string(),
+  schedule: z.union([
+    z.array(z.string()),
+    z.object({
+      time: z.string(),
+      days: z.array(z.string()),
+    }),
+  ]),
+  genres: z.array(z.string()),
+  rating: z.object({
+    average: z.number().nullable(),
+  }),
+  network: z.object({
+    name: z.string(),
+  }),
+  image: z.object({
+    original: z.string(),
+  }),
+});
+
 interface ShowEpisode {
   id: number;
   name: string;
   status: string;
   summary: string;
-  schedule: [string];
-  genres: [string];
+  schedule: string[] | { time: string; days: string[] };
+  genres: string[];
   rating: {
-    average: number;
+    average: number | null;
   };
   network: {
     name: string;
@@ -31,17 +56,28 @@ async function fetchShowData(id: string): Promise<ShowEpisode> {
   const res = await fetch(`https://api.tvmaze.com/shows/${id}`);
 
   if (!res.ok) {
-    console.log('Failed to fetch show data', res.status, res.statusText);
+    console.error('Failed to fetch show data', res.status, res.statusText);
     throw new Error('Failed to fetch show data');
   }
 
-  const showData: ShowEpisode = await res.json();
-  return showData;
+  const showData = await res.json();
+
+  // Explicitly cast the data to the expected type
+  const validationResult = ShowEpisodeSchema.safeParse(showData);
+
+  if (validationResult.success) {
+    return validationResult.data;
+  } else {
+    console.error('Fetched data:', showData);
+    console.error('Validation error:', validationResult.error.message);
+    console.error('Validation issues:', validationResult.error.issues);
+    throw new Error('Data validation failed');
+  }
 }
 
 export default async function ShowPage({ params: { id } }: Params) {
   const data = await fetchShowData(id);
-
+  console.log(data);
   const renderHTML = (html: string) => {
     return { __html: html };
   };
@@ -85,7 +121,7 @@ export default async function ShowPage({ params: { id } }: Params) {
             <p>Status: {data.status}</p>
           </div>
           <div className="py-5">
-            <p>Genres: {data.genres.join(', ')}</p>
+            <p>Genres: {data.genres?.join(', ')}</p>
           </div>
           </div>
           
@@ -102,7 +138,7 @@ export default async function ShowPage({ params: { id } }: Params) {
             <p>Status: {data.status}</p>
           </div>
           <div className="py-5">
-            <p>Genres: {data.genres.join(', ')}</p>
+            <p>Genres: {data.genres?.join(', ')}</p>
           </div>
           </div>
          
