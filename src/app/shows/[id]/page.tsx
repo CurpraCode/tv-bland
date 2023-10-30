@@ -1,6 +1,9 @@
+// 'use client'
 import React from 'react';
-import { z } from 'zod'; 
+import { z } from 'zod';
 import Image from 'next/image';
+
+import StarRating  from './StarRating';
 
 
 // Define types for your data
@@ -88,6 +91,8 @@ export default async function ShowPage({ params: { id } }: Params) {
       return 'Not available';
     }
   }
+  const normalizedRating = data.rating.average !== null ? Math.max(0, Math.min(5, data.rating.average)) : null;
+
   return (
     <div className='p-9'>
       <div className='p-4 flex flex-col items-center md:flex-row'>
@@ -100,48 +105,52 @@ export default async function ShowPage({ params: { id } }: Params) {
           />
         </div>
         <div className='text-left'>
-          <h2 className='text-2xl mb-10 mt-8 sm:mt-0 font-bold'>{data.name}</h2>
+          <h2 className='text-2xl mb-6 mt-8 sm:mt-0 font-bold'>{data.name}</h2>
+          <div className='text-md flex mb-4'>
+          <StarRating value={normalizedRating !== null ? normalizedRating : 0} />
+            <p className="ml-3">{data.rating.average !== null ? `${data.rating.average}/5` : 'N/A'}</p>
+          </div>
           <div dangerouslySetInnerHTML={renderHTML(data.summary)} className='text-md w-96 font-semibold' />
         </div>
       </div>
 
       <div className='mt-8'>
-        
-       
+
+
         <div className='grid grid-cols-2 gap-4'>
           <div>
-             <h2 className='font-bold text-2xl'>Show Info</h2>
-             <div className="py-5">
-            <p>Streamed on: {data.network.name}</p>
-          </div>
-          <div className="py-5">
+            <h2 className='font-bold text-2xl'>Show Info</h2>
+            <div className="py-5">
+              <p>Streamed on: {data.network.name}</p>
+            </div>
+            <div className="py-5">
             <p>Schedule: {formatSchedule(data.schedule)}</p>
+            </div>
+            <div className="py-5">
+              <p>Status: {data.status}</p>
+            </div>
+            <div className="py-5">
+              <p>Genres: {data.genres?.join(', ')}</p>
+            </div>
           </div>
-          <div className="py-5">
-            <p>Status: {data.status}</p>
-          </div>
-          <div className="py-5">
-            <p>Genres: {data.genres?.join(', ')}</p>
-          </div>
-          </div>
-          
-         
+
+
           <div>
-             <h2 className='font-bold text-2xl'>Starring</h2>
-             <div className="py-5">
-            <p>Streamed on: {data.network.name}</p>
+            <h2 className='font-bold text-2xl'>Starring</h2>
+            <div className="py-5">
+              <p>Streamed on: {data.network.name}</p>
+            </div>
+            <div className="py-5">
+              <p>Schedule: {formatSchedule(data.schedule)}</p>
+            </div>
+            <div className="py-5">
+              <p>Status: {data.status}</p>
+            </div>
+            <div className="py-5">
+              <p>Genres: {data.genres?.join(', ')}</p>
+            </div>
           </div>
-          <div className="py-5">
-            <p>Schedule: {formatSchedule(data.schedule)}</p>
-          </div>
-          <div className="py-5">
-            <p>Status: {data.status}</p>
-          </div>
-          <div className="py-5">
-            <p>Genres: {data.genres?.join(', ')}</p>
-          </div>
-          </div>
-         
+
         </div>
       </div>
     </div>

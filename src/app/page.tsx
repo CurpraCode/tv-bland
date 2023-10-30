@@ -2,12 +2,16 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { z } from 'zod'; 
+import StarRating from './shows/[id]/StarRating';
 
 const ShowSchema = z.object({
   id: z.number(),
   name: z.string(),
   image: z.object({
     original: z.string(),
+  }),
+  rating: z.object({
+    average: z.number().nullable(),
   }),
 });
 
@@ -64,7 +68,12 @@ export default async function Home() {
       </div>
       <h2 className='px-9 text-xl sm:text-2xl mt-4'>Last Added Shows</h2>
       <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
-        {data?.map((episode) => (
+        {data?.map((episode) => {
+          const showRating = episode.show?.rating?.average;
+          const normalizedRating = showRating !== null ? Math.max(0, Math.min(5, showRating)) : null;
+
+          return(
+          
           <div className='flex flex-col items-center p-4 rounded-md shadow-md' key={episode.show.id}>
             <Link href={`/shows/${episode?.show?.id}`}>
               <Image
@@ -74,11 +83,16 @@ export default async function Home() {
                 alt="Picture of the Movie"
               />
             </Link>
-            <p className='mt-2 text-center font-semibold text-sm md:text-lg'>
+            <div className="mt-3">
+               <StarRating value={normalizedRating !== null ? normalizedRating : 0} />
+           </div> 
+           <p className='mt-2 text-center font-semibold text-sm md:text-lg'>
               {episode.show.name}
             </p>
+            
+           
           </div>
-        ))}
+        )})}
       </div>
     </div>
   );
