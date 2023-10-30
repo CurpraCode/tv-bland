@@ -27,7 +27,7 @@ interface ShowEpisode {
   };
 }
 
-export async function fetchShowData(id: string): Promise<ShowEpisode> {
+async function fetchShowData(id: string): Promise<ShowEpisode> {
   const res = await fetch(`https://api.tvmaze.com/shows/${id}`);
 
   if (!res.ok) {
