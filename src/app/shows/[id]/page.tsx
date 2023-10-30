@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+// import Link from 'next/link';
 import Image from 'next/image';
 
 // Define types for your data
@@ -27,7 +27,7 @@ interface ShowEpisode {
   };
 }
 
-async function fetchShowData(id: string): Promise<ShowEpisode> {
+export async function fetchShowData(id: string): Promise<ShowEpisode> {
   const res = await fetch(`https://api.tvmaze.com/shows/${id}`);
 
   if (!res.ok) {

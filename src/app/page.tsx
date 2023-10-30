@@ -12,10 +12,6 @@ interface Episode {
   };
 }
 
-interface HomeProps {
-  scheduleData: Episode[];
-}
-
 async function fetchScheduleData(): Promise<Episode[]> {
   const res = await fetch('https://api.tvmaze.com/schedule/');
 
@@ -32,7 +28,7 @@ export default async function Home() {
   const data = await fetchScheduleData();
   console.log(data)
   return (
-    <div className=' p-4'>
+    <div className='p-4'>
       <div className='p-9'> 
       <p className='text-sm md:text-lg'>TV Show and web series database.
         <br />
